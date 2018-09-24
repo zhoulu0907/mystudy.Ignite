@@ -34,7 +34,21 @@
 			            </property>
 			        </bean>
 			     </property>
-			     
+					<property name="collisionSpi">
+						<bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
+						  <!-- Execute one job at a time. -->
+						    <property name="parallelJobsNumber" value="1"/>
+					  </bean>
+					</property>
+					<!-- <property name="collisionSpi">
+						<bean class="org.apache.ignite.spi.collision.priorityqueue.PriorityQueueCollisionSpi">
+				      
+				        Change the parallel job number if needed.
+				        Default is number of cores times 2.
+				     
+							<property name="parallelJobsNumber" value="5"/>
+						</bean>
+					</property> -->
 			     <!-- Enabling Apache Ignite native persistence. -->
 				 <!-- <property name="dataStorageConfiguration">
 				    <bean class="org.apache.ignite.configuration.DataStorageConfiguration">

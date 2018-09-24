@@ -1,4 +1,4 @@
-package my.study.ignite.init;
+package my.study.ignite.runner.init_0;
 
 import javax.annotation.Resource;
 

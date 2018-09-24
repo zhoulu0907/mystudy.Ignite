@@ -1,47 +1,61 @@
-package my.study.ignite.queue;
+package my.study.runner.dataprepare_1;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteQueue;
+import org.apache.ignite.configuration.CollectionConfiguration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 import my.study.dataprepare.bean.ForexTrade;
+import my.study.dataprepare.mapper.ForexTradeMapper;
 import my.study.ignite.common.utils.IgniteUtils;
 
 @Component
-@Order(value=2)
+@Order(value=1)
 @Slf4j
-public class QueueRunner implements CommandLineRunner {
+public class DataprepareRunner implements CommandLineRunner {
 
+	@Resource
+	private ForexTradeMapper forexTradeMapper;
 	@Resource
 	private IgniteUtils igniteUtils;
 	@Override
 	public void run(String... arg0) throws Exception {
 		// TODO Auto-generated method stub
-		log.info("Start QueueRunner.");
+		log.info("Start DataprepareRunner.");
 		Ignite ignite = igniteUtils.getIgniteInstance();
-		IgniteQueue<ForexTrade> forexTradeQueue = ignite.queue("forex-trade", 0, null);
+		CollectionConfiguration colCfg = new CollectionConfiguration();
+		colCfg.setCollocated(false);
+		IgniteQueue<ForexTrade> forexTradeQueue = ignite.queue("forex-trade", 0, colCfg);
+
+		List<ForexTrade> forexTradeList = forexTradeMapper.find(0, 10);
+		
 		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				while(true) {
+				for (ForexTrade forexTrade : forexTradeList) {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					ForexTrade forexTrade = forexTradeQueue.take();
-					log.info("Get forexTrade: " + forexTrade.getDeal());
+					forexTradeQueue.put(forexTrade);
+					log.info("Put trade: " + forexTrade.getDeal());
 				}
 			}
 		}).start();
+		
 	}
 
 }
