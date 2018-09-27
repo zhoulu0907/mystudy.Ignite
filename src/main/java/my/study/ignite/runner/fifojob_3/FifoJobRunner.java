@@ -16,9 +16,12 @@ import my.study.ignite.common.utils.IgniteUtils;
 import my.study.ignite.runner.fifojob_3.jobs.PrioritiesJob;
 import my.study.ignite.runner.fifojob_3.jobs.RandomJob;
 
-@Component
-@Order(2)
-@Log4j
+/**
+ * @author Administrator
+ * @验证结论：FifoQueueCollisionSpi权限很高，直接限定所有job，无论是同步线程，异步线程，自定义线程的所有线程数。如果设置为1，所有线程都要以FIFO执行。
+ */
+//@Component
+@Order(3)
 public class FifoJobRunner implements CommandLineRunner {
 
 	@Resource
@@ -26,10 +29,26 @@ public class FifoJobRunner implements CommandLineRunner {
 
 	private Random rand = new Random();
 	
-	private int jobId = 0;
+	private int AsynJobId = 0;
+	private int synJobId = 0;
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				for (int loop = 0; loop < 10; loop++) {
+					Ignite ignite = igniteUtils.getIgniteInstance();
+					int sleepTime = rand.nextInt(10);
+					synJobId++;
+					ignite.compute().run(new RandomJob("SynJob", synJobId, sleepTime));
+//					ignite.compute().executeAsync(new PrioritiesJob(sleepTime, loop, sleepTime), "");
+				}
+			}
+			
+		}).start();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -38,8 +57,8 @@ public class FifoJobRunner implements CommandLineRunner {
 				for (int loop = 0; loop < 10; loop++) {
 					Ignite ignite = igniteUtils.getIgniteInstance();
 					int sleepTime = rand.nextInt(10);
-					jobId++;
-					ignite.compute().runAsync(new RandomJob(jobId, sleepTime));
+					AsynJobId++;
+					ignite.compute().runAsync(new RandomJob("FIFO", AsynJobId, sleepTime));
 //					ignite.compute().executeAsync(new PrioritiesJob(sleepTime, loop, sleepTime), "");
 				}
 			}

@@ -18,7 +18,7 @@ import my.study.dataprepare.bean.ForexTrade;
 import my.study.dataprepare.mapper.ForexTradeMapper;
 import my.study.ignite.common.utils.IgniteUtils;
 
-@Component
+//@Component
 @Order(value=1)
 @Slf4j
 public class DataprepareRunner implements CommandLineRunner {

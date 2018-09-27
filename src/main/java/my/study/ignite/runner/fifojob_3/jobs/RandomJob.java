@@ -12,6 +12,7 @@ public class RandomJob implements IgniteRunnable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private String jobType;
 	private int jobId;
 	private int sleepTime;
 
@@ -24,10 +25,11 @@ public class RandomJob implements IgniteRunnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		log.info("JobId: " + jobId + ", Sleep: " + sleepTime + " ms.");
+		log.info("JobType: " + jobType + ", JobId: " + jobId + ", Sleep: " + sleepTime + " ms.");
 	}
 	
-	public RandomJob(int jobId, int sleepTime) {
+	public RandomJob(String jobType, int jobId, int sleepTime) {
+		this.jobType = jobType;
 		this.jobId = jobId;
 		this.sleepTime = sleepTime;
 	}

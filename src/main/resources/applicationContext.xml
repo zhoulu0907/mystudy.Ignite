@@ -29,7 +29,7 @@
 			        <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
 			            <property name="ipFinder">
 			                <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.zk.TcpDiscoveryZookeeperIpFinder">
-			                    <property name="zkConnectionString" value="127.0.0.1:2181"/>
+			                    <property name="zkConnectionString" value="${ignite.zookeeper.address}"/>
 			                </bean>
 			            </property>
 			        </bean>
@@ -37,8 +37,16 @@
 					<property name="collisionSpi">
 						<bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
 						  <!-- Execute one job at a time. -->
-						    <property name="parallelJobsNumber" value="1"/>
+						    <property name="parallelJobsNumber" value="3"/>
 					  </bean>
+					</property>
+					<property name="executorConfiguration">
+						<list>
+							<bean class="org.apache.ignite.configuration.ExecutorConfiguration">
+								<property name="name" value="AsynExecutor"/>
+								<property name="size" value="5"/>
+							</bean>
+						</list>
 					</property>
 					<!-- <property name="collisionSpi">
 						<bean class="org.apache.ignite.spi.collision.priorityqueue.PriorityQueueCollisionSpi">
