@@ -72,6 +72,12 @@
 					  <property name="walCompactionEnabled" value="true" />
 				    </bean>
 				 </property> -->
+				 
+							 <property name="userAttributes">
+							 		<map>
+							 				<entry key="DOMAIN" value="NO_PERSIST"></entry>
+							 		</map>
+							 </property>
 	         </bean>
 	     </property>
 	 </bean>

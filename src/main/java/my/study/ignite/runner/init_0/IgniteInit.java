@@ -15,6 +15,7 @@ import my.study.ignite.common.Constant;
 import my.study.ignite.common.bean.UserTradeInfo;
 import my.study.ignite.common.bean.UserTradeInfoKey;
 import my.study.ignite.common.utils.IgniteUtils;
+import my.study.ignite.common.utils.NodeFilter;
 
 @Component
 @Order(value = 0)
@@ -32,12 +33,14 @@ public class IgniteInit implements CommandLineRunner {
 	private void initCache() {
 		// TODO Auto-generated method stub
 		Ignite ignite = igniteUtils.getIgniteInstance();
+		ignite.cluster().active(true);
 		
 		//init user trade cache
 		CacheConfiguration<UserTradeInfoKey, UserTradeInfo> userTradeCfg = 
 				new CacheConfiguration<UserTradeInfoKey, UserTradeInfo>();
 		userTradeCfg.setName(Constant.CACHE_USER_TRADE);
 		userTradeCfg.setIndexedTypes(UserTradeInfoKey.class, UserTradeInfo.class);
+//		userTradeCfg.setNodeFilter(new NodeFilter("NO_PERSIST"));
 		ignite.getOrCreateCache(userTradeCfg);
 		
 		
