@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import org.apache.ignite.cache.affinity.AffinityKeyMapped;
 
+import lombok.Data;
+
+@Data
 public class UserTradeInfoKey implements Serializable{
 	/**
 	 * 
@@ -14,17 +17,9 @@ public class UserTradeInfoKey implements Serializable{
 	private String login;
 	private String deal;
 	
-	public String getLogin() {
-		return login;
-	}
-	public void setLogin(String login) {
+	public UserTradeInfoKey(String login, String deal) {
 		this.login = login;
-	}
-	public String getDeal() {
-		return deal;
-	}
-	public void setDeal(String deal) {
 		this.deal = deal;
 	}
-	
+		
 }

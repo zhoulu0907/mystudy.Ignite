@@ -34,20 +34,20 @@
 			            </property>
 			        </bean>
 			     </property>
-					<property name="collisionSpi">
+					<!-- <property name="collisionSpi">
 						<bean class="org.apache.ignite.spi.collision.fifoqueue.FifoQueueCollisionSpi">
-						  <!-- Execute one job at a time. -->
-						    <property name="parallelJobsNumber" value="3"/>
+						  Execute one job at a time.
+						    <property name="parallelJobsNumber" value="5"/>
 					  </bean>
 					</property>
 					<property name="executorConfiguration">
 						<list>
 							<bean class="org.apache.ignite.configuration.ExecutorConfiguration">
 								<property name="name" value="AsynExecutor"/>
-								<property name="size" value="5"/>
+								<property name="size" value="1"/>
 							</bean>
 						</list>
-					</property>
+					</property> -->
 					<!-- <property name="collisionSpi">
 						<bean class="org.apache.ignite.spi.collision.priorityqueue.PriorityQueueCollisionSpi">
 				      
@@ -73,11 +73,11 @@
 				    </bean>
 				 </property> -->
 				 
-							 <property name="userAttributes">
+							 <!-- <property name="userAttributes">
 							 		<map>
 							 				<entry key="DOMAIN" value="NO_PERSIST"></entry>
 							 		</map>
-							 </property>
+							 </property> -->
 	         </bean>
 	     </property>
 	 </bean>
