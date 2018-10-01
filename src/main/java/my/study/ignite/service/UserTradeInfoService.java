@@ -24,13 +24,28 @@ public class UserTradeInfoService {
 	
 	@Resource
 	private IgniteUtils igniteUtils;
-
-	public List<UserTradeInfo> getUserTradeInfos(String login) {
+	
+	public List<UserTradeInfo> getTotalUserTradeInfos() {
 		List<UserTradeInfo> userTradeInfos = new ArrayList<UserTradeInfo>();
 		
 		SqlQuery<UserTradeInfoKey, UserTradeInfo> sql = new SqlQuery<>(UserTradeInfo.class, "login != ?");
 		IgniteCache<UserTradeInfoKey, UserTradeInfo> cache = igniteUtils.getIgniteInstance().cache(Constant.CACHE_USER_TRADE);
 		try(QueryCursor<Entry<UserTradeInfoKey, UserTradeInfo>> cursor = cache.query(sql.setArgs(""))){
+			for (Entry<UserTradeInfoKey, UserTradeInfo> e : cursor) {
+				userTradeInfos.add(e.getValue());
+			}
+		}
+		
+		return userTradeInfos;
+		
+	}
+
+	public List<UserTradeInfo> getUserTradeInfos(String login) {
+		List<UserTradeInfo> userTradeInfos = new ArrayList<UserTradeInfo>();
+		
+		SqlQuery<UserTradeInfoKey, UserTradeInfo> sql = new SqlQuery<>(UserTradeInfo.class, "login = ?");
+		IgniteCache<UserTradeInfoKey, UserTradeInfo> cache = igniteUtils.getIgniteInstance().cache(Constant.CACHE_USER_TRADE);
+		try(QueryCursor<Entry<UserTradeInfoKey, UserTradeInfo>> cursor = cache.query(sql.setArgs(login))){
 			for (Entry<UserTradeInfoKey, UserTradeInfo> e : cursor) {
 				userTradeInfos.add(e.getValue());
 			}

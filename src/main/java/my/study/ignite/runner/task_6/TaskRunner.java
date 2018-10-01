@@ -53,7 +53,7 @@ public class TaskRunner implements CommandLineRunner {
 			userTradeInfo.setHoldtime(forexTrade.getClosetime().getTime() 
 					- forexTrade.getOpentime().getTime());
 			userTradeInfoMap.put(userTradeInfoKey, userTradeInfo);
-			log.info("deal: " + forexTrade.getDeal() + ", profit: " + forexTrade.getProfit());
+			log.info("deal: " + userTradeInfo.getDeal() + ", profit: " + forexTrade.getProfit());
 		}
 		cache.putAll(userTradeInfoMap);
 		
@@ -63,6 +63,7 @@ public class TaskRunner implements CommandLineRunner {
 		for (Entry<UserTradeInfoKey, UserTradeInfo> e : userTradeInfoMap.entrySet()) {
 			Map<UserTradeInfoKey, UserTradeInfo> jobMap = new HashMap<>(1);
 			jobMap.put(e.getKey(), e.getValue());
+			log.info("start deal: " + e.getValue().getDeal());
 			ComputeTaskFuture<Map<UserTradeInfoKey, UserTradeInfo>> rst = 
 					ignite.compute().executeAsync(ProfitTransTask.class, jobMap);
 			Map<UserTradeInfoKey, UserTradeInfo> rstMap = rst.get();

@@ -1,5 +1,6 @@
 package my.study.ignite.runner.events_7;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.compute.ComputeTaskFuture;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
@@ -24,11 +26,12 @@ import my.study.ignite.common.bean.UserTradeInfoKey;
 import my.study.ignite.common.utils.IgniteUtils;
 import my.study.ignite.runner.events_7.processors.Processor;
 import my.study.ignite.runner.events_7.task.ProcessorTask;
+import my.study.ignite.runner.events_7.task.ProcessorTaskSample;
 
 @Component
 @Order(7)
 @Slf4j
-public class EventsRunner implements CommandLineRunner, ApplicationContextAware{
+public class EventsRunner implements CommandLineRunner{
 
 	@Resource
 	private IgniteUtils igniteUtils;
@@ -36,7 +39,7 @@ public class EventsRunner implements CommandLineRunner, ApplicationContextAware{
 	@Resource
 	private ForexTradeMapper forexTradeMapper;
 	
-	private Map<String, Processor> processorMap;
+//	private Map<String, Processor> processorMap;
 	
 	@Override
 	public void run(String... args) throws Exception {
@@ -44,26 +47,36 @@ public class EventsRunner implements CommandLineRunner, ApplicationContextAware{
 
 		Ignite ignite = igniteUtils.getIgniteInstance();
 		IgniteCache<UserTradeInfoKey, UserTradeInfo> cache = ignite.cache(Constant.CACHE_USER_TRADE);
-		List<ForexTrade> forexTradeList = forexTradeMapper.find(0, 10);
+		List<ForexTrade> forexTradeList = forexTradeMapper.find(0, 1000);
 		//save data
-		int dealId = 1;
 		Map<UserTradeInfoKey, UserTradeInfo> userTradeInfoMap = new HashMap<UserTradeInfoKey, UserTradeInfo>();
 		for (ForexTrade forexTrade : forexTradeList) {
-			UserTradeInfoKey userTradeInfoKey = new UserTradeInfoKey(forexTrade.getLogin(), "" + dealId++);
+			UserTradeInfoKey userTradeInfoKey = new UserTradeInfoKey(forexTrade.getLogin(), forexTrade.getDeal());
 			UserTradeInfo userTradeInfo = new UserTradeInfo(userTradeInfoKey);
 			userTradeInfo.setSymbol(forexTrade.getSymbol());
 			userTradeInfo.setType(forexTrade.getType());
 			userTradeInfo.setVolume(forexTrade.getVolume());
-			userTradeInfo.setProfit(forexTrade.getProfit());
+			userTradeInfo.setProfit(0.);
 			userTradeInfo.setHoldtime(forexTrade.getClosetime().getTime() 
 					- forexTrade.getOpentime().getTime());
 			userTradeInfoMap.put(userTradeInfoKey, userTradeInfo);
 			log.info("deal: " + forexTrade.getDeal() + ", profit: " + forexTrade.getProfit());
 		}
 		cache.putAll(userTradeInfoMap);
-		
-		//one by one task
-		ignite.compute().execute(ProcessorTask.class, "");
+		List<String> processorNames = new ArrayList<String>(); 
+		processorNames.add("processorAddOne"); 
+		processorNames.add("processorAddTwo"); 
+		processorNames.add("processorSnapshot");
+		//one by one task		
+		while(true) {
+			for (String processorName : processorNames) {
+				ComputeTaskFuture<String> rst = ignite.compute().executeAsync(ProcessorTask.class, processorName);
+				log.info("Process result: " + rst.get());
+			}
+//			ignite.compute().executeAsync(ProcessorTaskSample.class, "processorAddOne");
+//			ignite.compute().executeAsync(ProcessorTaskSample.class, "processorAddTwo");
+//			ignite.compute().executeAsync(ProcessorTaskSample.class, "processorSnapshot");
+		}
 
 //		processorMap.get("processorAddOne").onEvent();
 //		processorMap.get("processorAddTwo").onEvent();
@@ -71,10 +84,10 @@ public class EventsRunner implements CommandLineRunner, ApplicationContextAware{
 		
 	}
 
-	@Override
-	public void setApplicationContext(ApplicationContext cnt) throws BeansException {
-		// TODO Auto-generated method stub
-		 this.processorMap = cnt.getBeansOfType(Processor.class);
-	}
+//	@Override
+//	public void setApplicationContext(ApplicationContext cnt) throws BeansException {
+//		// TODO Auto-generated method stub
+//		 this.processorMap = cnt.getBeansOfType(Processor.class);
+//	}
 
 }

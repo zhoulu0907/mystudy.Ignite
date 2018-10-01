@@ -23,7 +23,7 @@ public class ProcessorAddTwo implements Processor {
 	@Override
 	public void onEvent() {
 		// TODO Auto-generated method stub
-		List<UserTradeInfo> userTradeInfos = userTradeInfoService.getUserTradeInfos("");
+		List<UserTradeInfo> userTradeInfos = userTradeInfoService.getTotalUserTradeInfos();
 		Map<UserTradeInfoKey, UserTradeInfo> userTradeInfoMap = new HashMap<UserTradeInfoKey, UserTradeInfo>(userTradeInfos.size());
 		for (UserTradeInfo userTradeInfo : userTradeInfos) {
 			double profit = userTradeInfo.getProfit() + 2;
