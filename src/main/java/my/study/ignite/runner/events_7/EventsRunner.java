@@ -63,14 +63,14 @@ public class EventsRunner implements CommandLineRunner{
 			log.info("deal: " + forexTrade.getDeal() + ", profit: " + forexTrade.getProfit());
 		}
 		cache.putAll(userTradeInfoMap);
-		List<String> processorNames = new ArrayList<String>(); 
+		List<String> processorNames = new ArrayList<>(3);
 		processorNames.add("processorAddOne"); 
 		processorNames.add("processorAddTwo"); 
 		processorNames.add("processorSnapshot");
 		//one by one task		
 		while(true) {
 			for (String processorName : processorNames) {
-				ComputeTaskFuture<String> rst = ignite.compute().executeAsync(ProcessorTask.class, processorName);
+				ComputeTaskFuture rst = ignite.compute().executeAsync(ProcessorTask.class, processorName);
 				log.info("Process result: " + rst.get());
 			}
 //			ignite.compute().executeAsync(ProcessorTaskSample.class, "processorAddOne");

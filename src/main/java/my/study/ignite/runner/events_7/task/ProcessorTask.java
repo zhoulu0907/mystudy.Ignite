@@ -36,12 +36,12 @@ public class ProcessorTask extends ComputeTaskSplitAdapter<String, String>{
 	@Override
 	public String reduce(List<ComputeJobResult> results) throws IgniteException {
 		// TODO Auto-generated method stub
-		for (ComputeJobResult result : results) {
-			Boolean rst = (Boolean)result.getData();
-			if (rst == false) {
-				return "Failed";
-			}
-		}
+//		for (ComputeJobResult result : results) {
+//			Boolean rst = (Boolean)result.getData();
+//			if (rst == false) {
+//				return "Failed";
+//			}
+//		}
 		return "Success";
 	}
 
